@@ -189,3 +189,73 @@ elif page == "📤 Upload Data":
         st.subheader("📋 Responses Data Summary")
         st.write(st.session_state.responses_df.describe())
 
+
+# ══════════════════════════════════════════════
+# PAGE: Difficulty Analysis
+# ══════════════════════════════════════════════
+elif page == "📊 Difficulty Analysis":
+    st.markdown('<p class="main-header">📊 Difficulty Classification</p>', unsafe_allow_html=True)
+    st.markdown('<p class="sub-header">Questions classified as Easy, Medium, or Hard based on their score distribution.</p>', unsafe_allow_html=True)
+
+    if st.session_state.questions_df is not None:
+        df = st.session_state.questions_df.copy()
+
+        # Simple difficulty classification based on Score column
+        score_col = None
+        for col in ["Score", "score", "OwnerUserId"]:
+            if col in df.columns:
+                score_col = col
+                break
+
+        if score_col and pd.api.types.is_numeric_dtype(df[score_col]):
+            q_low = df[score_col].quantile(0.33)
+            q_high = df[score_col].quantile(0.66)
+
+            df["Difficulty"] = pd.cut(
+                df[score_col],
+                bins=[-np.inf, q_low, q_high, np.inf],
+                labels=["Hard", "Medium", "Easy"],
+            )
+
+            # Show metrics
+            col1, col2, col3, col4 = st.columns(4)
+            with col1:
+                st.metric("Total Questions", len(df))
+            with col2:
+                st.metric("🟢 Easy", int((df["Difficulty"] == "Easy").sum()))
+            with col3:
+                st.metric("🟡 Medium", int((df["Difficulty"] == "Medium").sum()))
+            with col4:
+                st.metric("🔴 Hard", int((df["Difficulty"] == "Hard").sum()))
+
+            st.markdown("---")
+
+            # Difficulty distribution bar chart
+            st.subheader("Difficulty Distribution")
+            diff_counts = df["Difficulty"].value_counts()
+            fig, ax = plt.subplots(figsize=(6, 4))
+            colors = ["#2ecc71", "#f39c12", "#e74c3c"]
+            diff_counts.reindex(["Easy", "Medium", "Hard"]).plot(
+                kind="bar", ax=ax, color=colors, edgecolor="white", linewidth=1.5
+            )
+            ax.set_ylabel("Number of Questions")
+            ax.set_xlabel("Difficulty Level")
+            ax.set_title("Question Difficulty Distribution")
+            ax.spines["top"].set_visible(False)
+            ax.spines["right"].set_visible(False)
+            plt.xticks(rotation=0)
+            plt.tight_layout()
+            st.pyplot(fig)
+
+            st.markdown("---")
+
+            # Show the classified table
+            st.subheader("Classified Questions")
+            display_cols = [c for c in ["Id", "Title", "Score", score_col, "Difficulty"] if c in df.columns]
+            display_cols = list(dict.fromkeys(display_cols))  # remove duplicates
+            st.dataframe(df[display_cols].head(50), use_container_width=True)
+
+        else:
+            st.warning("⚠️ Could not find a numeric 'Score' column to classify difficulty. Please check your data.")
+    else:
+        st.info("👈 Please upload questions data first from the **Upload Data** page.")
