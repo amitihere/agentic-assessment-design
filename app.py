@@ -259,3 +259,134 @@ elif page == "📊 Difficulty Analysis":
             st.warning("⚠️ Could not find a numeric 'Score' column to classify difficulty. Please check your data.")
     else:
         st.info("👈 Please upload questions data first from the **Upload Data** page.")
+
+
+# ══════════════════════════════════════════════
+# PAGE: Student Performance
+# ══════════════════════════════════════════════
+elif page == "👨‍🎓 Student Performance":
+    st.markdown('<p class="main-header">👨‍🎓 Student Performance Analysis</p>', unsafe_allow_html=True)
+    st.markdown('<p class="sub-header">Analyze how students respond to questions and identify performance patterns.</p>', unsafe_allow_html=True)
+
+    if st.session_state.responses_df is not None:
+        df = st.session_state.responses_df.copy()
+
+        st.subheader("📋 Response Data Overview")
+        col1, col2 = st.columns(2)
+        with col1:
+            st.metric("Total Responses", len(df))
+        with col2:
+            if "Score" in df.columns:
+                st.metric("Average Score", f"{df['Score'].mean():.2f}")
+
+        st.markdown("---")
+
+        # Score distribution
+        if "Score" in df.columns:
+            st.subheader("📊 Response Score Distribution")
+            fig, ax = plt.subplots(figsize=(8, 4))
+            df["Score"].clip(-10, 50).hist(bins=30, ax=ax, color="#667eea", edgecolor="white")
+            ax.set_xlabel("Score")
+            ax.set_ylabel("Frequency")
+            ax.set_title("Distribution of Response Scores")
+            ax.spines["top"].set_visible(False)
+            ax.spines["right"].set_visible(False)
+            plt.tight_layout()
+            st.pyplot(fig)
+
+        # Per-question performance
+        if "ParentId" in df.columns and "Score" in df.columns:
+            st.markdown("---")
+            st.subheader("📈 Per-Question Response Statistics")
+            per_q = df.groupby("ParentId")["Score"].agg(["mean", "count", "std"]).reset_index()
+            per_q.columns = ["Question ID", "Avg Score", "Response Count", "Score Std Dev"]
+            per_q = per_q.sort_values("Response Count", ascending=False)
+            st.dataframe(per_q.head(50), use_container_width=True)
+
+            # Top and bottom performing questions
+            col1, col2 = st.columns(2)
+            with col1:
+                st.subheader("🏆 Top Scoring Questions")
+                st.dataframe(
+                    per_q.nlargest(10, "Avg Score")[["Question ID", "Avg Score", "Response Count"]],
+                    use_container_width=True,
+                )
+            with col2:
+                st.subheader("⚠️ Lowest Scoring Questions")
+                st.dataframe(
+                    per_q.nsmallest(10, "Avg Score")[["Question ID", "Avg Score", "Response Count"]],
+                    use_container_width=True,
+                )
+
+    else:
+        st.info("👈 Please upload response/answer data first from the **Upload Data** page.")
+
+
+# ══════════════════════════════════════════════
+# PAGE: Visualizations
+# ══════════════════════════════════════════════
+elif page == "📈 Visualizations":
+    st.markdown('<p class="main-header">📈 Visualizations & Trends</p>', unsafe_allow_html=True)
+    st.markdown('<p class="sub-header">Interactive charts to explore question and performance trends.</p>', unsafe_allow_html=True)
+
+    if st.session_state.questions_df is not None:
+        df = st.session_state.questions_df.copy()
+
+        # Score distribution
+        if "Score" in df.columns:
+            st.subheader("📊 Question Score Distribution")
+            fig, ax = plt.subplots(figsize=(8, 4))
+            df["Score"].clip(-5, 100).hist(bins=40, ax=ax, color="#764ba2", edgecolor="white")
+            ax.set_xlabel("Score")
+            ax.set_ylabel("Frequency")
+            ax.set_title("Distribution of Question Scores")
+            ax.spines["top"].set_visible(False)
+            ax.spines["right"].set_visible(False)
+            plt.tight_layout()
+            st.pyplot(fig)
+
+        # Questions over time
+        date_col = None
+        for c in ["CreationDate", "creation_date"]:
+            if c in df.columns:
+                date_col = c
+                break
+
+        if date_col:
+            st.markdown("---")
+            st.subheader("📅 Questions Over Time")
+            df["_date"] = pd.to_datetime(df[date_col], errors="coerce")
+            df["_month"] = df["_date"].dt.to_period("M")
+            monthly = df.groupby("_month").size()
+            fig, ax = plt.subplots(figsize=(10, 4))
+            monthly.plot(kind="line", ax=ax, color="#f5576c", linewidth=2)
+            ax.set_xlabel("Month")
+            ax.set_ylabel("Number of Questions")
+            ax.set_title("Questions Posted Over Time")
+            ax.spines["top"].set_visible(False)
+            ax.spines["right"].set_visible(False)
+            plt.tight_layout()
+            st.pyplot(fig)
+
+        # Score boxplot by difficulty
+        if "Score" in df.columns:
+            st.markdown("---")
+            st.subheader("📦 Score by Difficulty Category")
+            q_low = df["Score"].quantile(0.33)
+            q_high = df["Score"].quantile(0.66)
+            df["Difficulty"] = pd.cut(
+                df["Score"],
+                bins=[-np.inf, q_low, q_high, np.inf],
+                labels=["Hard", "Medium", "Easy"],
+            )
+            fig, ax = plt.subplots(figsize=(6, 4))
+            df.boxplot(column="Score", by="Difficulty", ax=ax)
+            ax.set_title("Score Distribution by Difficulty")
+            ax.set_xlabel("Difficulty")
+            ax.set_ylabel("Score")
+            plt.suptitle("")
+            plt.tight_layout()
+            st.pyplot(fig)
+
+    else:
+        st.info("👈 Please upload questions data first from the **Upload Data** page.")
