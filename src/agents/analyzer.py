@@ -118,6 +118,10 @@ def test_api_connection():
 
     except Exception as e:
         print("API Error:", str(e))
-
+def run_analyzer_agent(state: dict) -> dict:
+    difficulty_json = state.get("difficulty", {})
+    problems = analyze_difficulty(difficulty_json)
+    state["problems"] = problems
+    return state
 if __name__ == "__main__":
     test_api_connection()
