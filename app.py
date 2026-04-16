@@ -445,12 +445,23 @@ st.markdown("""
 
     /* ── Matplotlib consistent style ── */
     .stPlotlyChart, .stPyplot { border-radius: 10px; overflow: hidden; }
-    .stExpander div[data-testid="stMarkdownContainer"] p {
+
+    /* Fix ALL text elements inside expanders (report viewer) */
+    .stExpander div[data-testid="stMarkdownContainer"] p,
+    .stExpander div[data-testid="stMarkdownContainer"] li,
+    .stExpander div[data-testid="stMarkdownContainer"] ul,
+    .stExpander div[data-testid="stMarkdownContainer"] ol,
+    .stExpander div[data-testid="stMarkdownContainer"] em,
+    .stExpander div[data-testid="stMarkdownContainer"] strong,
+    .stExpander div[data-testid="stMarkdownContainer"] span {
         color: #1C1C1E !important;
     }
-
-    /* Also fix bold text inside expander */
-    .stExpander strong {
+    /* Fix li items globally in main content area too */
+    div[data-testid="stMarkdownContainer"] li {
+        color: #1C1C1E !important;
+    }
+    div[data-testid="stMarkdownContainer"] ul,
+    div[data-testid="stMarkdownContainer"] ol {
         color: #1C1C1E !important;
     }
 
@@ -1057,20 +1068,14 @@ elif page == "Model Evaluation":
         st.markdown("<hr class='page-divider'/>", unsafe_allow_html=True)
         st.markdown('<p class="section-header">Performance Metrics</p>', unsafe_allow_html=True)
 
-        METRICS_PATH = "models/model_metrics.json"
-        CM_PATH      = "models/confusion_matrix.npy"
+        CM_PATH   = "models/confusion_matrix.npy"
         metrics_data = None
         cm_matrix    = None
         cm_labels    = list(model.classes_)
         metrics_source = None
 
-        if os.path.exists(METRICS_PATH):
-            with open(METRICS_PATH) as f:
-                metrics_data = json.load(f)
-            if os.path.exists(CM_PATH):
-                cm_matrix = np.load(CM_PATH)
-            metrics_source = "Training test split (saved from notebook)"
-        elif st.session_state.questions_df is not None:
+        # Always compute live on uploaded data (no hardcoded fallback)
+        if st.session_state.questions_df is not None:
             df_eval = st.session_state.questions_df.copy()
             if "Score" in df_eval.columns and ("Title" in df_eval.columns or "Body" in df_eval.columns):
                 with st.spinner("Computing metrics on uploaded data…"):
@@ -1089,7 +1094,7 @@ elif page == "Model Evaluation":
                     report = classification_report(y_true, y_pred, output_dict=True, zero_division=0)
                     cm_matrix    = confusion_matrix(y_true, y_pred, labels=cm_labels)
                     metrics_data  = {"accuracy": acc, "report": report}
-                    metrics_source = "Uploaded questions data (live evaluation)"
+                    metrics_source = "Live evaluation on your uploaded questions data"
 
         if metrics_data is not None:
             st.caption(f"Source: {metrics_source}")
@@ -1156,7 +1161,7 @@ elif page == "Model Evaluation":
                 st.pyplot(fig_cm)
                 plt.close()
         else:
-            st.info("Upload questions data with a Score column to compute live model metrics, or run the training notebook to save pre-computed metrics.")
+            st.info("📂 Upload your questions CSV on the **Upload Data** page (needs a **Score** column + **Title** or **Body** column) to see live model performance metrics computed against your real data.")
     else:
         st.warning(f"No saved model found. Train and save the model from the notebook first.\nExpected paths: `{MODEL_PATH}` and `{VECTORIZER_PATH}`")
 
