@@ -1235,7 +1235,7 @@ elif page == "Assessment Assistant":
         try:
             from agents.analyzer  import run_analyzer_agent
             from agents.retriever import run_retriever_agent
-            from agents.recommend import recomend_agent
+            from agents.recommend import recommend_agent
             from agents.reporter  import generate_report
 
             topic_analysis = {}
