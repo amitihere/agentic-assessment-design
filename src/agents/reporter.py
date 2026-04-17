@@ -17,6 +17,12 @@ def generate_report(state: dict) -> str:
     problems = state.get("problems", ["No problems identified."])
     principles = state.get("principles", ["No principles retrieved."])
     recommendations = state.get("recommendations", ["No recommendations available."])
+    topic_analysis = state.get("topic_analysis", {})
+
+    total = difficulty_dist.get("total", 1)
+    def get_pct(key):
+        count = difficulty_dist.get(key, 0)
+        return f"{count} ({count/total*100:.1f}%)" if total > 0 else f"{count} (0%)"
 
     date_str = datetime.datetime.now().strftime("%B %d, %Y")
 
