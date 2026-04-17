@@ -861,7 +861,7 @@ elif page == "Difficulty Analysis":
             with col_down:
                 st.markdown('<p class="section-header">Export</p>', unsafe_allow_html=True)
                 st.download_button(
-                    label=f"{icon('download', 14, '#1C1C1E')} Download JSON",
+                    label="⬇ Download JSON",
                     data=json.dumps(difficulty_distribution, indent=2),
                     file_name="difficulty_distribution.json",
                     mime="application/json",
