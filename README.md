@@ -1,11 +1,57 @@
 # Intelligent Exam Question Analysis & Agentic Assessment Design System
 
+> **Live App →** [https://agentic-assessment-design.streamlit.app](https://agentic-assessment-design.streamlit.app) *(Streamlit Community Cloud)*  
+> **GitHub →** [https://github.com/amitihere/agentic-assessment-design](https://github.com/amitihere/agentic-assessment-design)
+
 An AI-powered educational analytics platform that evaluates examination quality, predicts question difficulty, and assists educators in designing better assessments.  
 The system combines machine learning, natural language processing (NLP), and agentic reasoning to transform raw exam and student performance data into actionable academic insights.
 
 This project does not just analyze exams — it **acts as an intelligent assessment consultant** capable of reasoning over performance trends and recommending improvements to exam structure, fairness, and learning outcomes.
 
 ---
+
+## Setup & Installation
+
+```bash
+# 1. Clone the repository
+git clone https://github.com/amitihere/agentic-assessment-design.git
+cd agentic-assessment-design
+
+# 2. Create and activate virtual environment
+python -m venv venv
+source venv/bin/activate        # Mac/Linux
+# venv\Scripts\activate         # Windows
+
+# 3. Install dependencies
+pip install -r requirements.txt
+
+# 4. Set up environment variables
+cp .env.example .env
+# Add your GROQ_API_KEY to .env  (free at https://console.groq.com)
+
+# 5. Train the ML model
+python generate_models.py
+
+# 6. Run the app
+streamlit run app.py
+```
+
+### Environment Variables
+Create a `.env` file with:
+```
+GROQ_API_KEY=your_groq_api_key_here
+```
+Get a **free** Groq API key at [https://console.groq.com](https://console.groq.com).
+
+---
+
+## Dataset
+This project uses the [StackOverflow dataset from Kaggle](https://www.kaggle.com/datasets/stackoverflow/stackoverflow).  
+Questions are labeled Easy/Medium/Hard based on **score percentile** (bottom 33% → Hard, top 33% → Easy).  
+Upload your own CSV with columns: `Id`, `Title`, `Body`, `Score`, `Tags`.
+
+---
+
 
 ## Core Objectives
 - Analyze exam questions using historical student response data
