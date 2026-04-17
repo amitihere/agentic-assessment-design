@@ -9,7 +9,9 @@ import datetime
 def generate_report(state: dict) -> str:
     """
     Agent 4 - Reporter.
-    Creates a structured Markdown report from the pipeline state data.
+    Creates a detailed Markdown report from the pipeline state data, 
+    including metrics on difficulty distribution, topic performance, 
+    and pedagogical improvement recommendations.
     """
     difficulty_dist = state.get("difficulty", {"Easy": "0%", "Medium": "0%", "Hard": "0%"})
     problems = state.get("problems", ["No problems identified."])
