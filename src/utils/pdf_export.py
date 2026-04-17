@@ -79,7 +79,7 @@ def create_pdf_report(report_text: str) -> bytes:
                 italic_text = _sanitize(raw.strip("*").strip())
                 pdf.multi_cell(w=0, h=6, text=italic_text)
             else:
-                pdf.set_font("Helvetica", size=11)
+                pdf.set_font("Helvetica", size=BODY_TEXT_SIZE)
                 pdf.multi_cell(w=0, h=6, text=text)
         except Exception:
             # Skip any line that still can't render
