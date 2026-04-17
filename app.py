@@ -1260,7 +1260,11 @@ elif page == "Assessment Assistant":
                             "difficulty": row.get("Difficulty", "Unknown")
                         }
 
-            state = {"difficulty": difficulty_dict, "topic_analysis": topic_analysis}
+            state = {
+                "difficulty": difficulty_dict, 
+                "topic_analysis": topic_analysis,
+                "metadata": {"has_topic_data": len(topic_analysis) > 0}
+            }
 
             with st.status("Running 4-Agent Pipeline…", expanded=True) as pipeline_status:
                 st.write("Agent 1 — Analyzer: Detecting difficulty problems…")
