@@ -1,3 +1,8 @@
+"""
+Agent 4: Reporter Agent.
+Responsible for formatting the pipeline state into a structured Markdown 
+report suitable for both UI display and PDF export.
+"""
 import datetime
 
 
