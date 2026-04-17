@@ -1268,7 +1268,7 @@ elif page == "Assessment Assistant":
                 st.write(f"  {len(principles)} principle(s) retrieved")
 
                 st.write("Agent 3 — Recommender: Generating recommendations via LLM…")
-                state = recomend_agent(state)
+                state = recommend_agent(state)
                 recs  = state.get("recommendations", [])
                 st.write(f"  {len(recs)} recommendation(s) generated")
 
