@@ -64,8 +64,8 @@ def create_pdf_report(report_text: str) -> bytes:
                 continue
             elif raw.startswith("## "):
                 pdf.ln(4)
-                pdf.set_font("Helvetica", style="B", size=13)
-                heading = text.replace("## ", "", 1)
+                pdf.set_font("Helvetica", style="B", size=SECTION_TITLE_SIZE)
+                heading = _sanitize(_strip_markdown(raw[3:].strip()))
                 pdf.cell(w=0, h=8, text=heading, new_x="LMARGIN", new_y="NEXT")
             elif raw.startswith("- "):
                 pdf.set_font("Helvetica", size=11)
