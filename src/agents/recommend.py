@@ -70,7 +70,6 @@ def recommend_agent(state: dict) -> dict:
         Task:
         Give exactly 3 clear, actionable recommendations to improve the exam.
         Rules:
-        - Be concise
         - Be specific! Link recommendations to the actual topic data provided above
         - Output as a numbered list
         - STRICT: Do not invent statistics, percentages, or scores not present in the data above
