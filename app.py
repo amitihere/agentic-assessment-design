@@ -1342,8 +1342,7 @@ elif page == "Assessment Assistant":
         try:
             from utils.pdf_export import create_pdf_report
             pdf_bytes = create_pdf_report(
-                st.session_state.last_report,
-                state=st.session_state.get("last_report_state")
+                st.session_state.last_report
             )
             st.download_button(
                 label="⬇ Download PDF Report",
