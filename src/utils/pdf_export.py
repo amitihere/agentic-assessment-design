@@ -31,7 +31,7 @@ def _strip_markdown(text: str) -> str:
     return text
 
 
-def create_pdf_report(report_text: str) -> bytes:
+def create_pdf_report(report_text: str, state: dict = None) -> bytes:
     """
     Converts a Markdown-like report text into a PDF and returns its bytes.
     Uses fpdf2.
@@ -70,7 +70,7 @@ def create_pdf_report(report_text: str) -> bytes:
             elif raw.startswith("- "):
                 pdf.set_font("Helvetica", size=BODY_TEXT_SIZE)
                 content = _sanitize(_strip_markdown(raw[2:].strip()))
-                pdf.multi_cell(w=0, h=6, text="  \u2022  " + content)
+                pdf.multi_cell(w=0, h=6, text="  \xb7  " + content)
             elif re.match(r"^\d+[.)]", raw):
                 pdf.set_font("Helvetica", size=BODY_TEXT_SIZE)
                 pdf.multi_cell(w=0, h=6, text="  " + text)

@@ -19,8 +19,4 @@ def run_retriever_agent(state: dict) -> dict:
     principles = retrieve_relevant_principles(problems, top_k=3)
     state["principles"] = principles
 
-    print("Agent 2 — Retrieved Principles:")
-    for p in principles:
-        print(f"  → {p}")
-
     return state

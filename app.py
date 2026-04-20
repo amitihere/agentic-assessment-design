@@ -1240,18 +1240,10 @@ elif page == "Assessment Assistant":
 
             topic_analysis = {}
             if "questions_df" in st.session_state and st.session_state.questions_df is not None:
-                qdf = st.session_state.questions_df
+                qdf = st.session_state.questions_df.copy()
                 if "Title" in qdf.columns and "Score" in qdf.columns:
-                    qdf_sorted = qdf.sort_values(by="Score")
-                    extremes   = pd.concat([qdf_sorted.head(3), qdf_sorted.tail(2)]).drop_duplicates()
-                    for _, row in extremes.iterrows():
-                        topic_analysis[row["Title"]] = {
-                            "score": float(row["Score"]) if pd.notnull(row["Score"]) else 0.0,
-                            "difficulty": row.get("Difficulty", "Unknown")
-                        }
-            if "questions_df" in st.session_state and st.session_state.questions_df is not None:
-                qdf = st.session_state.questions_df
-                if "Title" in qdf.columns and "Score" in qdf.columns:
+                    # Robust numeric conversion for sorting and analysis
+                    qdf["Score"] = pd.to_numeric(qdf["Score"], errors="coerce")
                     qdf_sorted = qdf.sort_values(by="Score")
                     extremes   = pd.concat([qdf_sorted.head(3), qdf_sorted.tail(2)]).drop_duplicates()
                     for _, row in extremes.iterrows():
@@ -1273,7 +1265,7 @@ elif page == "Assessment Assistant":
             # If response data is available, add global stats
             if st.session_state.responses_df is not None:
                 rdf = st.session_state.responses_df
-                state["metadata"]["avg_student_score"] = round(rdf["Score"].mean(), 2) if "Score" in rdf.columns else "N/A"
+                state["metadata"]["avg_student_score"] = round(pd.to_numeric(rdf["Score"], errors='coerce').mean(), 2) if "Score" in rdf.columns else "N/A"
                 state["metadata"]["total_responses"] = len(rdf)
 
             with st.status("Running 4-Agent Pipeline…", expanded=True) as pipeline_status:
