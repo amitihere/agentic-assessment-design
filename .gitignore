@@ -25,3 +25,7 @@ data/processed/
 
 # Environment variables
 .env
+
+# Scratch and temporary files
+scratch/
+*.pdf

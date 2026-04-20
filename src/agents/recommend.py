@@ -93,10 +93,8 @@ def recommend_agent(state: dict) -> dict:
         )
         result = response.choices[0].message.content.strip().split("\n")
         recommendations = [line.strip() for line in result if line.strip()]
-        print("   (LLM recommendations generated via Groq)")
 
     except Exception as e:
-        print(f"   ⚠ LLM unavailable ({type(e).__name__}), using rule-based fallback.")
         recommendations = _fallback_recommendations(problems, state)
 
     state["recommendations"] = recommendations

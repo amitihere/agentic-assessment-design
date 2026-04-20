@@ -1240,18 +1240,10 @@ elif page == "Assessment Assistant":
 
             topic_analysis = {}
             if "questions_df" in st.session_state and st.session_state.questions_df is not None:
-                qdf = st.session_state.questions_df
+                qdf = st.session_state.questions_df.copy()
                 if "Title" in qdf.columns and "Score" in qdf.columns:
-                    qdf_sorted = qdf.sort_values(by="Score")
-                    extremes   = pd.concat([qdf_sorted.head(3), qdf_sorted.tail(2)]).drop_duplicates()
-                    for _, row in extremes.iterrows():
-                        topic_analysis[row["Title"]] = {
-                            "score": float(row["Score"]) if pd.notnull(row["Score"]) else 0.0,
-                            "difficulty": row.get("Difficulty", "Unknown")
-                        }
-            if "questions_df" in st.session_state and st.session_state.questions_df is not None:
-                qdf = st.session_state.questions_df
-                if "Title" in qdf.columns and "Score" in qdf.columns:
+                    # Robust numeric conversion for sorting and analysis
+                    qdf["Score"] = pd.to_numeric(qdf["Score"], errors="coerce")
                     qdf_sorted = qdf.sort_values(by="Score")
                     extremes   = pd.concat([qdf_sorted.head(3), qdf_sorted.tail(2)]).drop_duplicates()
                     for _, row in extremes.iterrows():
@@ -1342,7 +1334,8 @@ elif page == "Assessment Assistant":
         try:
             from utils.pdf_export import create_pdf_report
             pdf_bytes = create_pdf_report(
-                st.session_state.last_report
+                st.session_state.last_report,
+                state=st.session_state.get("last_report_state")
             )
             st.download_button(
                 label="⬇ Download PDF Report",

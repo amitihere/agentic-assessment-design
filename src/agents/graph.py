@@ -34,24 +34,16 @@ def run_pipeline(difficulty_dict: dict, topic_analysis: dict = None) -> str:
     }
 
     # Agent 1 — Analyze difficulty and identify problems
-    print("▶ Running Agent 1: Analyzer...")
     state = run_analyzer_agent(state)
-    print(f"   Problems found: {len(state.get('problems', []))}")
 
     # Agent 2 — Retrieve relevant pedagogical principles
-    print("▶ Running Agent 2: Retriever...")
     state = run_retriever_agent(state)
-    print(f"   Principles retrieved: {len(state.get('principles', []))}")
 
     # Agent 3 — Generate recommendations
-    print("▶ Running Agent 3: Recommender...")
     state = recommend_agent(state)
-    print(f"   Recommendations generated: {len(state.get('recommendations', []))}")
 
     # Agent 4 — Generate final report (returns markdown string, not written to state)
-    print("▶ Running Agent 4: Reporter...")
     report = generate_report(state)
-    print("   Report generated.\n")
 
     return report
 
@@ -66,4 +58,3 @@ if __name__ == "__main__":
     }
 
     report = run_pipeline(test_difficulty)
-    print(report)
